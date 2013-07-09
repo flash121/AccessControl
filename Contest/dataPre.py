@@ -106,7 +106,7 @@ def getTest():
     return X
 
 def create_test_submission(prediction):
-    content = ['id,ACTION']
+    content = ['Id,Action']
     for i, p in enumerate(prediction):
         content.append('%i,%f' %(i+1,p))
     f = open("submittion.csv", 'w')
