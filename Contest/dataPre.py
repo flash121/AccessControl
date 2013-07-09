@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-
+import random
 # read in csv and return header and content seperately
 def readCSV(filename):
     content = pd.read_csv(filename)
@@ -47,9 +47,24 @@ def compare(singlePath, idRes, content):
             continue
         X.append(np.mean(s))
     return X
-        
 
-        
+def genRandom(n):
+    rNum = [random.randint(1,10) for i in range(n)]
+    return rNum
+
+def selectSample(content, r, threshold):
+    r = np.array(r)
+    testIndex = (r <= 3)
+    trainIndex = (r >3)
+    
+    trainSet = content[r <= 3]
+    testSet = content[r > 3]
+
+    return trainSet, testSet
+            
 content = readCSV('train.csv')
 access, path = resource(0, content)
 X = compare(path[:1], 0, content)
+n = len(content)
+r = genRandom(n)
+trainSet, testSet = selectSample(content, r, 3)
