@@ -2,10 +2,12 @@ import numpy as np
 import pandas as pd
 import random
 # read in csv and return header and content seperately
+
 def readCSV(filename):
     content = pd.read_csv(filename)
     print content
     return content
+
 
 # idRes is an resource id we want to find its info
 # content is the loaded file as dataframe format
@@ -24,22 +26,25 @@ def resource(idRes, content):
     # path is all other info except action
     return access, path
 
+
 # singlePath is one row of info for testing
 # idRes is resource id
 # content is the info
 def compare(singlePath, idRes, content):
 
+
     arrSinglePath = np.asarray(singlePath)
     access, path = resource(idRes,content);
     #print access, path
-    #print arrSinglePath
+    print arrSinglePath
+
 
     shapePath = path.shape
     p = np.zeros(shapePath)
     for i in range(len(path)):
-        #print np.array(path[i : i + 1])
+        print np.array(path[i : i + 1])
         p[i] = np.where( np.array(path[i : i + 1]) == arrSinglePath, 1 , 0)
-    #print p
+    print p
     arrAccess = np.asarray(access)
     pT = np.vstack((np.asarray(access), p.T))
     # now p is transposed
@@ -47,6 +52,7 @@ def compare(singlePath, idRes, content):
     #print pT
     X = []
     for i in range(len(pT)):
+
 
         s = arrAccess[pT[i] == 1]
         #print 's', s, len(s)
@@ -56,9 +62,11 @@ def compare(singlePath, idRes, content):
         X.append(np.mean(s))
     return X
 
+
 def genRandom(n):
     rNum = [random.randint(1,10) for i in range(n)]
     return rNum
+
 
 def selectSample(content, r, threshold):
     r = np.array(r)
@@ -66,42 +74,63 @@ def selectSample(content, r, threshold):
     trainSet = content[r > threshold]
     testSet = content[r <= threshold]
 
+
     return trainSet, testSet
+
 
 def genVector(trainSet, testSet):
     X = []
     for i in range(len(testSet)):
         onePath = testSet[i:i+1]
-        onePath = onePath.drop('ACTION', axis = 1)
+        print onePath
+      
+
         idRes = onePath.RESOURCE
         idRes = np.array(idRes)
         res = idRes[0]
         
         Xtemp = compare(onePath, res, trainSet)
         X.append(Xtemp)
+        #print i
         print Xtemp
     return X
 
-def main():            
+def getTest():
+    testContent = readCSV('test.csv')
     content = readCSV('train.csv')
-    '''
-    access, path = resource(0, content)
+
+    testC = testContent.drop('id', axis = 1)
+
+    X = genVector(content, testC)
+    print X
+    return X
+
+def create_test_submission(prediction):
+    content = ['id,ACTION']
+    for i, p in enumerate(prediction):
+        content.append('%i,%f' %(i+1,p))
+    f = open("submittion.csv", 'w')
+    f.write('\n'.join(content))
+    f.close()
+    print 'Saved'
     
-    singlePath = path[:1]
-    idRes = singlePath.RESOURCE
-    idRes = np.array(idRes)
-    res = idRes[0]
-    print type(res)
-    x = compare(singlePath, 0, content)
-    print x
-    '''
+def getdata():            
+    content = readCSV('train.csv')
     n = len(content)
     r = genRandom(n)
     trainSet, testSet = selectSample(content, r, 1)
-    print trainSet
-    print testSet
-    X = genVector(trainSet, testSet)
+    #print trainSet
+    #print testSet
 
+    testS = testSet.drop('ACTION', axis = 1)
+     
+    X = genVector(trainSet, testS)
+    A2=testSet['ACTION']
+    A=[]
+    for a in range(0,A2.index.shape[0]):
+        A.append(A2[A2.index[a]])
+    return A,X
 
-if __name__=="__main__":
-    main()
+if __name__=='__main__':
+    getTest()
+
