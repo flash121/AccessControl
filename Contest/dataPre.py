@@ -36,15 +36,15 @@ def compare(singlePath, idRes, content):
     arrSinglePath = np.asarray(singlePath)
     access, path = resource(idRes,content);
     #print access, path
-    print arrSinglePath
+    #print arrSinglePath
 
 
     shapePath = path.shape
     p = np.zeros(shapePath)
     for i in range(len(path)):
-        print np.array(path[i : i + 1])
+        #print np.array(path[i : i + 1])
         p[i] = np.where( np.array(path[i : i + 1]) == arrSinglePath, 1 , 0)
-    print p
+    #print p
     arrAccess = np.asarray(access)
     pT = np.vstack((np.asarray(access), p.T))
     # now p is transposed
@@ -82,7 +82,7 @@ def genVector(trainSet, testSet):
     X = []
     for i in range(len(testSet)):
         onePath = testSet[i:i+1]
-        print onePath
+        #print onePath
       
 
         idRes = onePath.RESOURCE
@@ -92,7 +92,7 @@ def genVector(trainSet, testSet):
         Xtemp = compare(onePath, res, trainSet)
         X.append(Xtemp)
         #print i
-        print Xtemp
+        #print Xtemp
     return X
 
 def getTest():
@@ -102,7 +102,7 @@ def getTest():
     testC = testContent.drop('id', axis = 1)
 
     X = genVector(content, testC)
-    print X
+    #print X
     return X
 
 def create_test_submission(prediction):
