@@ -71,7 +71,7 @@ def cv_loop(X, y, model, N):
         model.fit(X_train, y_train)
         preds = model.predict_proba(X_cv)[:,1]
         auc = metrics.auc_score(y_cv, preds)
-        print "AUC (fold %d/%d): %f" % (i + 1, N, auc)
+        #print "AUC (fold %d/%d): %f" % (i + 1, N, auc)
         mean_auc += auc
     return mean_auc/N
     
@@ -79,8 +79,15 @@ def main(train='train.csv', test='test.csv', submit='logistic_pred.csv'):
     print "Reading dataset..."
     #pdb.set_trace()
     train_data = pd.read_csv(train)
+
     test_data = pd.read_csv(test)
     all_data = np.vstack((train_data.ix[:,1:-1], test_data.ix[:,1:-1]))
+    # select a column to classify 
+    col = 0
+    cColumn = all_data[:,col]
+    cSet = set(cColumn)
+    temp_data = np.delete(all_data, col, axis = 1)
+    all_data = temp_data
 
     num_train = np.shape(train_data)[0]
     
@@ -101,6 +108,8 @@ def main(train='train.csv', test='test.csv', submit='logistic_pred.csv'):
     X_train_all = np.hstack((X, X_2, X_3))
     X_test_all = np.hstack((X_test, X_test_2, X_test_3))
     num_features = X_train_all.shape[1]
+    
+    
     
     model = linear_model.LogisticRegression()
     
@@ -126,9 +135,6 @@ def main(train='train.csv', test='test.csv', submit='logistic_pred.csv'):
         good_features.add(sorted(scores)[-1][1])
         score_hist.append(sorted(scores)[-1])
         print "Current features: %s" % sorted(list(good_features))
-        
-        if len(good_features) == 3:
-            break
     
     # Remove last added feature from good_features
     good_features.remove(score_hist[-1][1])
