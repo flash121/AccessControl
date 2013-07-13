@@ -82,9 +82,7 @@ def genVector(trainSet, testSet):
     X = []
     for i in range(len(testSet)):
         onePath = testSet[i:i+1]
-        #print onePath
-      
-
+        #print onePath      
         idRes = onePath.RESOURCE
         idRes = np.array(idRes)
         res = idRes[0]
